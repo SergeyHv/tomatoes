@@ -1,10 +1,10 @@
 // ================= НАСТРОЙКИ =================
 const STORAGE_KEY = "tomato_list";
 
-// ⚠️ ВСТАВЬ СВОИ ДАННЫЕ
-const AIRTABLE_BASE_ID = "YOUR_BASE_ID";
+// ❗ ОБЯЗАТЕЛЬНО ЗАМЕНИ НА СВОИ
+const AIRTABLE_BASE_ID = "PASTE_BASE_ID_HERE";
 const AIRTABLE_TABLE = "Tomatoes";
-const AIRTABLE_TOKEN = "YOUR_AIRTABLE_TOKEN";
+const AIRTABLE_TOKEN = "PASTE_TOKEN_HERE";
 
 // ================= ХРАНЕНИЕ =================
 function getList() {
@@ -20,23 +20,40 @@ let tomatoes = [];
 
 // ================= ЗАГРУЗКА ИЗ AIRTABLE =================
 async function loadTomatoes() {
-  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}?filterByFormula=Visible=1`;
+  try {
+    const url =
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}` +
+      `?filterByFormula=${encodeURIComponent("Visible = TRUE()")}`;
 
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${AIRTABLE_TOKEN}`
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_TOKEN}`
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error("Airtable error: " + res.status);
     }
-  });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  tomatoes = data.records.map(r => ({
-    id: r.id,
-    name: r.fields.Name || "Без названия"
-  }));
+    if (!data.records) {
+      throw new Error("No records in response");
+    }
 
-  renderCatalog();
-  updateCounters();
+    tomatoes = data.records.map(r => ({
+      id: r.id,
+      name: r.fields.Name || "Без названия"
+    }));
+
+    renderCatalog();
+    updateCounters();
+
+  } catch (err) {
+    console.error("LOAD ERROR:", err);
+    document.getElementById("catalog").innerHTML =
+      "<div class='text-red-600'>Ошибка загрузки каталога</div>";
+  }
 }
 
 // ================= РЕНДЕР КАТАЛОГА =================
