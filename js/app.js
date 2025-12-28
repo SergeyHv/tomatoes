@@ -2,9 +2,9 @@
 const STORAGE_KEY = "tomato_list";
 
 // ❗ ОБЯЗАТЕЛЬНО ЗАМЕНИ НА СВОИ
-const AIRTABLE_BASE_ID = "PASTE_BASE_ID_HERE";
+const AIRTABLE_BASE_ID = "app6EHiUQjTfVJlms";
 const AIRTABLE_TABLE = "Tomatoes";
-const AIRTABLE_TOKEN = "PASTE_TOKEN_HERE";
+const AIRTABLE_TOKEN = "pateEHIo3j53vIlzs.455368f35fb62584a30cfbad67c023a56f7d0fa5e60e9f4215711b0e7f975d97";
 
 // ================= ХРАНЕНИЕ =================
 function getList() {
