@@ -1,7 +1,5 @@
-// ====== НАСТРОЙКИ ======
 const STORAGE_KEY = "tomato_list";
 
-// ====== ДАННЫЕ (заглушка, вместо Airtable) ======
 const tomatoes = [
   { id: "1", name: "Бычье сердце" },
   { id: "2", name: "Черри сладкий" },
@@ -9,7 +7,6 @@ const tomatoes = [
   { id: "4", name: "Де Барао" }
 ];
 
-// ====== ХРАНЕНИЕ ======
 function getList() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -18,13 +15,12 @@ function saveList(list) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
-// ====== РЕНДЕР КАТАЛОГА ======
 const catalog = document.getElementById("catalog");
 
 function renderCatalog() {
   const list = getList();
-
   catalog.innerHTML = "";
+
   tomatoes.forEach(t => {
     const inList = list.includes(t.id);
 
@@ -46,14 +42,12 @@ function renderCatalog() {
   });
 }
 
-// ====== СЧЁТЧИК ======
 function updateCounters() {
   const count = getList().length;
   document.getElementById("listCount").textContent = count;
   document.getElementById("modalCount").textContent = count;
 }
 
-// ====== ДОБАВЛЕНИЕ ======
 document.addEventListener("click", e => {
   if (e.target.classList.contains("addBtn")) {
     const id = e.target.dataset.id;
@@ -67,7 +61,6 @@ document.addEventListener("click", e => {
   }
 });
 
-// ====== МОДАЛКА ======
 const modal = document.getElementById("listModal");
 const listItems = document.getElementById("listItems");
 
@@ -106,7 +99,6 @@ function renderList() {
   });
 }
 
-// ====== УДАЛЕНИЕ ======
 document.addEventListener("click", e => {
   if (e.target.classList.contains("removeBtn")) {
     const id = e.target.dataset.id;
@@ -119,7 +111,6 @@ document.addEventListener("click", e => {
   }
 });
 
-// ====== ОЧИСТКА ======
 document.getElementById("clearList").onclick = () => {
   saveList([]);
   renderList();
@@ -127,11 +118,9 @@ document.getElementById("clearList").onclick = () => {
   updateCounters();
 };
 
-// ====== ОТПРАВКА (ПОКА ЗАГЛУШКА) ======
 document.getElementById("sendList").onclick = () => {
   alert("Форма отправки будет следующим шагом");
 };
 
-// ====== INIT ======
 renderCatalog();
 updateCounters();
