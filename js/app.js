@@ -23,7 +23,7 @@ async function loadTomatoes() {
   try {
     const url =
       `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}` +
-      `?filterByFormula=${encodeURIComponent("Visible = TRUE()")}`;
+      `?view=${encodeURIComponent("All")}`;
 
     const res = await fetch(url, {
       headers: {
@@ -31,15 +31,9 @@ async function loadTomatoes() {
       }
     });
 
-    if (!res.ok) {
-      throw new Error("Airtable error: " + res.status);
-    }
+    if (!res.ok) throw new Error("Airtable error");
 
     const data = await res.json();
-
-    if (!data.records) {
-      throw new Error("No records in response");
-    }
 
     tomatoes = data.records.map(r => ({
       id: r.id,
@@ -50,11 +44,12 @@ async function loadTomatoes() {
     updateCounters();
 
   } catch (err) {
-    console.error("LOAD ERROR:", err);
+    console.error(err);
     document.getElementById("catalog").innerHTML =
-      "<div class='text-red-600'>Ошибка загрузки каталога</div>";
+      "<div class='text-red-600'>Каталог не загрузился</div>";
   }
 }
+
 
 // ================= РЕНДЕР КАТАЛОГА =================
 const catalog = document.getElementById("catalog");
