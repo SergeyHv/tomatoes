@@ -1,12 +1,12 @@
+// ================= НАСТРОЙКИ =================
 const STORAGE_KEY = "tomato_list";
 
-const tomatoes = [
-  { id: "1", name: "Бычье сердце" },
-  { id: "2", name: "Черри сладкий" },
-  { id: "3", name: "Розовый гигант" },
-  { id: "4", name: "Де Барао" }
-];
+// ⚠️ ВСТАВЬ СВОИ ДАННЫЕ
+const AIRTABLE_BASE_ID = "YOUR_BASE_ID";
+const AIRTABLE_TABLE = "Tomatoes";
+const AIRTABLE_TOKEN = "YOUR_AIRTABLE_TOKEN";
 
+// ================= ХРАНЕНИЕ =================
 function getList() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -15,6 +15,31 @@ function saveList(list) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
+// ================= ДАННЫЕ =================
+let tomatoes = [];
+
+// ================= ЗАГРУЗКА ИЗ AIRTABLE =================
+async function loadTomatoes() {
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}?filterByFormula=Visible=1`;
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${AIRTABLE_TOKEN}`
+    }
+  });
+
+  const data = await res.json();
+
+  tomatoes = data.records.map(r => ({
+    id: r.id,
+    name: r.fields.Name || "Без названия"
+  }));
+
+  renderCatalog();
+  updateCounters();
+}
+
+// ================= РЕНДЕР КАТАЛОГА =================
 const catalog = document.getElementById("catalog");
 
 function renderCatalog() {
@@ -29,7 +54,7 @@ function renderCatalog() {
 
     card.innerHTML = `
       <h3 class="font-semibold mb-2">${t.name}</h3>
-      <button 
+      <button
         class="addBtn ${inList ? "bg-gray-300" : "bg-green-600 text-white"} px-3 py-1 rounded"
         data-id="${t.id}"
         ${inList ? "disabled" : ""}
@@ -42,12 +67,14 @@ function renderCatalog() {
   });
 }
 
+// ================= СЧЁТЧИК =================
 function updateCounters() {
   const count = getList().length;
   document.getElementById("listCount").textContent = count;
   document.getElementById("modalCount").textContent = count;
 }
 
+// ================= ДОБАВЛЕНИЕ =================
 document.addEventListener("click", e => {
   if (e.target.classList.contains("addBtn")) {
     const id = e.target.dataset.id;
@@ -61,6 +88,7 @@ document.addEventListener("click", e => {
   }
 });
 
+// ================= МОДАЛКА =================
 const modal = document.getElementById("listModal");
 const listItems = document.getElementById("listItems");
 
@@ -99,6 +127,7 @@ function renderList() {
   });
 }
 
+// ================= УДАЛЕНИЕ =================
 document.addEventListener("click", e => {
   if (e.target.classList.contains("removeBtn")) {
     const id = e.target.dataset.id;
@@ -111,6 +140,7 @@ document.addEventListener("click", e => {
   }
 });
 
+// ================= ОЧИСТКА =================
 document.getElementById("clearList").onclick = () => {
   saveList([]);
   renderList();
@@ -118,9 +148,10 @@ document.getElementById("clearList").onclick = () => {
   updateCounters();
 };
 
+// ================= ОТПРАВКА (ПОКА ЗАГЛУШКА) =================
 document.getElementById("sendList").onclick = () => {
   alert("Форма отправки будет следующим шагом");
 };
 
-renderCatalog();
-updateCounters();
+// ================= INIT =================
+loadTomatoes();
